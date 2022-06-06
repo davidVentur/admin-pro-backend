@@ -1,25 +1,28 @@
-require("dotenv").config(); // leyendo las variables de entorno
 const express = require("express");
-const cors = require("cors");
+//VARIABLES DE ENTORNO(.env)
+require("dotenv").config();
+//CONECION A BD
 const { dbConnection } = require("./database/config");
 
-//Crear servidor de express
+//CREAR EL SERVIDER DE EXPRESS
 const app = express();
 
-//configurar cors
+//CORS
+const cors = require("cors");
+
+//CONFIGURAR CORS
 app.use(cors());
 
-//lectura y parseo del body
-app.use(express.json());
-
-// base de datos
+//BASE DE DATOS
 dbConnection();
+//RUTAS
+app.get("/", (req, res) => {
+  res.status(200).json({
+    ok: true,
+    msg: "Hola mundo",
+  });
+});
 
-//Rutas
-app.use('/api/usuarios',require('./routes/usuarios')); // middleware
-
-
-//muestra en cosola
 app.listen(process.env.PORT, () => {
-  console.log("Servidor corriendo en puerto " + process.env.PORT);
+  console.log("Servidor corriendo en el puerto " + process.env.PORT);
 });

@@ -1,6 +1,7 @@
 const { response } = require("express");
 const bcrypt = require("bcryptjs");
 const Usuario = require("../models/usuario");
+const res = require("express/lib/response");
 
 const getUsuarios = async (req, res) => {
   const usuarios = await Usuario.find({}, "nombre email role google");
@@ -46,4 +47,55 @@ const createUser = async (req, res = response) => {
   }
 };
 
-module.exports = { getUsuarios, createUser };
+const updateUser = async (req, res = response) => {
+  const uid = req.params.id;
+  
+  try {
+  
+    const usuarioDB = await Usuario.findById(uid);
+   
+
+    if (!usuarioDB) {
+      return res.status(404).json({
+        ok: false,
+        msg: "No existe un usuario por ese id",
+      });
+    }
+
+    //Actualizaciones
+    const campos = req.body;
+
+    if (usuarioDB.email === req.body.email) {
+      delete campos.email;
+    } else {
+      const existeEmail = await Usuario.findOne({ email: req.body.email });
+      if (existeEmail) {
+        return res.status(400).json({
+          ok: false,
+          msg: "Ya exist un usuario con ese email",
+        });
+      }
+    }
+
+    delete campos.password;
+    delete campos.google;
+
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, {
+      new: true,
+    });
+
+    res.json({
+      ok: true,
+      msg: "Usuario actualizado correctamente",
+      usuario: usuarioActualizado,
+    });
+  } catch (error) {
+    console.log(error);
+    req.status(500).json({
+      ok: false,
+      msg: "Error",
+    });
+  }
+};
+
+module.exports = { getUsuarios, createUser, updateUser };

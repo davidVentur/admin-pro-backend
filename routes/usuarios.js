@@ -4,7 +4,12 @@ Ruta: /api/usuarios
 
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { getUsuarios, createUser, updateUser } = require("../controllers/usuarios");
+const {
+  getUsuarios,
+  createUser,
+  updateUser,
+  deleteUser,
+} = require("../controllers/usuarios");
 const { validarCampo } = require("../middlewares/validar-campos");
 const router = Router();
 
@@ -26,9 +31,11 @@ router.put(
   [
     check("nombre", "El nombre es obligatorio").not().isEmpty(),
     check("email", "El email es obligatorio").isEmail(),
-    check("role", 'El role es obligatorio').isEmail()
+    check("role", "El role es obligatorio").isEmail(),
   ],
   updateUser
 );
+
+router.delete("/:id", deleteUser);
 
 module.exports = router;

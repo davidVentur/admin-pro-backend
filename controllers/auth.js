@@ -1,0 +1,42 @@
+const { response } = require("express");
+const bcrypt = require('bcryptjs');
+const Usuario = require("../models/usuario");
+
+const login = async (req, res = response) => {
+  const { email, password } = req.body;
+  try {
+
+    //Verifica email
+    const usuarioDB = await Usuario.findOne({ email });
+    if (!usuarioDB) {
+      return res.status(404).json({
+        ok: false,
+        msg: "Email no valido",
+      });
+    }
+
+    //Verificar contraseña
+    const validPassword = bcrypt.compareSync(password, usuarioDB.password);
+    if(!validPassword){
+        return res.status(400).json({
+            ok:false,
+            msg:'Contraseña no valida'
+        });
+    }
+
+    //Generar el TOKEN -> JWT
+
+    res.json({
+      ok: true,
+      msg: "Todo correcto",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: "false",
+      msg: "Error al logearse",
+    });
+  }
+};
+
+module.exports = { login };

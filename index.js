@@ -18,8 +18,10 @@ app.use(cors());
 
 //BASE DE DATOS
 dbConnection();
+
 //RUTAS
 app.use('/api/usuarios',require('./routes/usuarios'));
+app.use('/api/login',require('./routes/auth'));
 
 
 

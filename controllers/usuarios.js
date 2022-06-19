@@ -5,12 +5,25 @@ const res = require("express/lib/response");
 const { generarJWT } = require("../helpers/jwt");
 
 const getUsuarios = async (req, res) => {
-  const usuarios = await Usuario.find({}, "nombre email role google");
+  //Paginacion
+  const index = Number(req.query.index) || 0;
+  const limit = Number(req.query.limit) || 50;
+  // const usuarios = await Usuario.find({}, "nombre email role google")
+  //   .skip(index)
+  //   .limit(limit);
+
+  // const totalUsers = await Usuario.count();
+
+  const [usuarios, totalUsers] = await Promise.all([
+    Usuario.find({}, "nombre email role google").skip(index).limit(limit),
+    Usuario.count(),
+  ]);
 
   res.status(200).json({
     ok: true,
     usuarios,
-    uid: req.uid
+    uid: req.uid,
+    totalUsers,
   });
 };
 
@@ -42,7 +55,7 @@ const createUser = async (req, res = response) => {
     res.status(200).json({
       ok: true,
       usuario: usuario,
-      token
+      token,
     });
   } catch (error) {
     console.log(error);
@@ -127,3 +140,5 @@ const deleteUser = async (req, res = response) => {
 };
 
 module.exports = { getUsuarios, createUser, updateUser, deleteUser };
+
+// Examplpe url for pagination http://localhost:3000/api/usuarios?index=13&limit=1

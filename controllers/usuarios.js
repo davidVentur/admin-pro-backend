@@ -15,8 +15,8 @@ const getUsuarios = async (req, res) => {
   // const totalUsers = await Usuario.count();
 
   const [usuarios, totalUsers] = await Promise.all([
-    Usuario.find({}, "nombre email role google").skip(index).limit(limit),
-    Usuario.count(),
+    Usuario.find({}, "nombre email role google img").skip(index).limit(limit),
+    Usuario.countDocuments(),
   ]);
 
   res.status(200).json({
